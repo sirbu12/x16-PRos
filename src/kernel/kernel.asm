@@ -565,6 +565,10 @@ get_cmd:
     call string_string_compare
     jc near cd_command
 
+    mov di, terry_string
+    call string_string_compare
+    jc near rip_terry
+
     mov si, command
     mov di, kernel_file
     call string_string_compare
@@ -607,6 +611,17 @@ get_cmd:
     call string_string_compare
     jc .load_exe_program
 
+.check_ple_extension:
+    ; Check if command ends with .PLE
+    mov ax, command
+    call string_string_length
+    mov si, command
+    add si, ax
+    sub si, 4
+    mov di, ple_extension
+    call string_string_compare
+    jc .load_ple_program
+
     ; ============ Auto-append Extensions ============
 
     ; No extension found, try .COM first
@@ -642,7 +657,24 @@ get_cmd:
     call fs_file_exists
     jnc .load_exe_program
 
-    ; .EXE not found, try .BIN
+    ; .EXE not found, try .PLE
+    mov ax, command
+    call string_string_length
+    mov si, command
+    add si, ax
+    sub si, 4
+    mov byte [si], '.'
+    mov byte [si+1], 'P'
+    mov byte [si+2], 'L'
+    mov byte [si+3], 'E'
+    mov byte [si+4], 0
+
+    ; Check if .PLE file exists
+    mov ax, command
+    call fs_file_exists
+    jnc .load_ple_program
+
+    ; .PLE not found, try .BIN
     mov ax, command
     call string_string_length
     mov si, command
@@ -810,6 +842,52 @@ get_cmd:
     jmp total_fail
 
 .restore_and_done_exe:
+    call restore_current_dir
+    jmp get_cmd
+
+.load_ple_program:
+    ; Try to load PLE from current directory
+    mov ax, command
+    call ple_execute
+    jnc get_cmd
+
+    ; If not found, try /BIN.DIR on current drive
+    call save_current_dir
+    mov byte [current_directory], 0
+    mov word [current_dir_cluster], 0
+
+    mov ax, bin_dir_name
+    call fs_change_directory
+    jc .restore_and_try_a_ple
+
+    mov ax, command
+    call ple_execute
+    jnc .restore_and_done_ple
+
+.restore_and_try_a_ple:
+    call restore_current_dir
+    cmp byte [current_drive_char], 'A'
+    je total_fail
+
+    ; Try A:/BIN.DIR
+    call save_current_dir
+    mov al, 'A'
+    call fs_change_drive_letter
+    jc .restore_and_fail_a_ple
+
+    mov ax, bin_dir_name
+    call fs_change_directory
+    jc .restore_and_fail_a_ple
+
+    mov ax, command
+    call ple_execute
+    jnc .restore_and_done_ple
+
+.restore_and_fail_a_ple:
+    call restore_current_dir
+    jmp total_fail
+
+.restore_and_done_ple:
     call restore_current_dir
     jmp get_cmd
 
@@ -2130,6 +2208,19 @@ cd_command:
 .already_root_msg   db 'Already in root directory', 0
 .failure_msg        db 'Directory not found or invalid', 0
 
+rip_terry:
+    mov si, .rip_terry
+    call print_string
+
+    mov si, risen
+    call play_melody
+    
+    call print_newline
+
+    jmp get_cmd
+
+.rip_terry db "Rest in peace Terry A. Devis (1969 - 2018)", 0
+
 %INCLUDE "src/kernel/init.asm"                      ; x16-PRos initialisation
 %INCLUDE "src/kernel/log.asm"                       ; Log functions
 %INCLUDE "src/kernel/features/fs.asm"               ; FAT12 filesystem functions
@@ -2141,6 +2232,7 @@ cd_command:
 %INCLUDE "src/kernel/features/encrypt.asm"          ; Encryption
 %INCLUDE "src/kernel/features/com/com.asm"          ; COM
 %INCLUDE "src/kernel/features/exe/exe.asm"          ; MZ EXE
+%INCLUDE "src/kernel/features/ple/ple.asm"          ; PLE
 %INCLUDE "src/kernel/features/cp866.asm"            ; .FNT font loading
 
 ; ====== DRIVERS ======
@@ -2217,6 +2309,7 @@ view_string    db 'VIEW', 0
 mkdir_string   db 'MKDIR', 0
 deldir_string  db 'DELDIR', 0
 cd_string      db 'CD', 0
+terry_string  db 'TERRY', 0
 
 autocomplete_cmd_table:
     dw exit_string, help_string, info_string, cls_string
@@ -2258,6 +2351,125 @@ shut_melody:
     dw 2637, 150
     dw 3136, 150
     dw 4186, 300
+    dw 0, 0
+
+risen:
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x0E1C, 250
+    dw 1, 5
+    dw 0x0D59, 500
+    dw 1, 5
+    dw 0x0D59, 500
+    dw 1, 5
+    dw 0x0E1C, 165
+    dw 1, 5
+    dw 0x0E1C, 170
+    dw 1, 5
+    dw 0x0D59, 165
+    dw 1, 5
+    dw 0x0F8B, 500
+    dw 1, 5
+    dw 0x11A1, 250
+    dw 1, 5
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x0E1C, 250
+    dw 1, 5
+    dw 0x11A1, 165
+    dw 1, 5
+    dw 0x0BEF, 170
+    dw 1, 5
+    dw 0x0D59, 165
+    dw 1, 5
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x0E1C, 250
+    dw 1, 5
+    dw 0x0D59, 500
+    dw 1, 5
+    dw 0x0D59, 500
+    dw 1, 5
+    dw 0x0E1C, 165
+    dw 1, 5
+    dw 0x0E1C, 170
+    dw 1, 5
+    dw 0x0D59, 165
+    dw 1, 5
+    dw 0x0F8B, 500
+    dw 1, 5
+    dw 0x11A1, 250
+    dw 1, 5
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x0E1C, 250
+    dw 1, 5
+    dw 0x11A1, 165
+    dw 1, 5
+    dw 0x0BEF, 170
+    dw 1, 5
+    dw 0x0D59, 165
+    dw 1, 5
+    dw 0x1537, 250
+    dw 1, 5
+    dw 0x1537, 250
+    dw 1, 5
+    dw 0x0E1C, 165
+    dw 1, 5
+    dw 0x0E1C, 170
+    dw 1, 5
+    dw 0x0D59, 165
+    dw 1, 5
+    dw 0x0E1C, 165
+    dw 1, 5
+    dw 0x0F8B, 170
+    dw 1, 5
+    dw 0x0BEF, 165
+    dw 1, 5
+    dw 0x12E9, 165
+    dw 1, 5
+    dw 0x0F8B, 170
+    dw 1, 5
+    dw 0x11A1, 165
+    dw 1, 5
+    dw 0x0D59, 500
+    dw 1, 5
+    dw 0x0F8B, 250
+    dw 1, 5
+    dw 0x11A1, 250
+    dw 1, 5
+    dw 0x0F8B, 500
+    dw 1, 5
+    dw 0x0E1C, 500
+    dw 1, 5
+    dw 0x1537, 250
+    dw 1, 5
+    dw 0x1537, 250
+    dw 1, 5
+    dw 0x0E1C, 165
+    dw 1, 5
+    dw 0x0E1C, 170
+    dw 1, 5
+    dw 0x0D59, 165
+    dw 1, 5
+    dw 0x0E1C, 165
+    dw 1, 5
+    dw 0x0F8B, 170
+    dw 1, 5
+    dw 0x0BEF, 165
+    dw 1, 5
+    dw 0x12E9, 165
+    dw 1, 5
+    dw 0x0F8B, 170
+    dw 1, 5
+    dw 0x11A1, 165
+    dw 1, 5
+    dw 0x0D59, 500
+    dw 1, 5
     dw 0, 0
 
 file_size            dw 0
