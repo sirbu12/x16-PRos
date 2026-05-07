@@ -16,6 +16,7 @@
 ;   0x09: CP866 control (AL=0x00 disable, AL=0x01 default font, AL=0x02 by name SI)
 ;   0x0A: Get system time (OUT: CH=hour, CL=min, DH=sec)
 ;   0x0B: Get system date (OUT: CH=century, CL=year, DH=month, DL=day)
+;   0x0С: Clear screen and aply theme from CONF.DIR/THEME.CFG
 ; Preserves all registers unless specified
 ; ==================================================================
 
@@ -73,6 +74,8 @@ int21_handler:
     je .get_time
     cmp ah, 0x0B
     je .get_date
+    cmp ah, 0x0C
+    je .clear_screen_themed
     jmp .done
 
 .init:
@@ -109,6 +112,10 @@ int21_handler:
 
 .clear_screen:
     call set_video_mode
+    jmp .done
+
+.clear_screen_themed:
+    call string_clear_screen
     jmp .done
 
 .set_color:

@@ -24,7 +24,7 @@ start:
     jmp main_loop
 
 main_loop:
-    mov ah, 0x06
+    mov ah, 0x0C
     int 0x21
 
     call draw_header
@@ -53,7 +53,7 @@ main_loop:
     jmp main_loop
 
 .exit:
-	mov ah, 0x06
+	mov ah, 0x0C
 	int 0x21
     ret
 

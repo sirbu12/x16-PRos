@@ -87,7 +87,7 @@ mode (640x480, 16 colors).
 
 ### Function 0x06: Clear Screen
 
-- **Description**: Clears the screen by resetting the VGA video mode to 640x480 with 16 colors.
+- **Description**: Clears the screen by resetting the VGA video mode to 640x480 with 16 colors. The current theme is **not** reapplied — the screen is left in default VGA state (black background). Use this when the caller wants the raw VGA defaults (e.g. SETUP).
 - **Input**:
     - `AH` = 0x06
 - **Output**: None
@@ -148,6 +148,16 @@ mode (640x480, 16 colors).
 - **Preserves**: All registers except `CX`, `DX`
 - **Error Handling**: No errors reported
 - **Notes**: Reads the RTC via BIOS `INT 0x1A` and applies the timezone offset from `CONF.DIR/TIMEZONE.CFG`. Day boundaries are handled correctly (e.g., UTC+5 at 23:00 rolls the date forward). Values are returned in binary (not BCD).
+
+### Function 0x0C: Clear Screen with Theme
+
+- **Description**: Clears the screen and reapplies the user's current theme (background and foreground colors loaded from `CONF.DIR/THEME.CFG`). Use this when the caller wants the screen to look consistent with the rest of the OS.
+- **Input**:
+    - `AH` = 0x0C
+- **Output**: None
+- **Preserves**: All registers
+- **Error Handling**: No errors reported
+- **Notes**: Internally calls `set_video_mode` followed by `load_and_apply_theme`. If the theme file is missing or unreadable, the screen falls back to default VGA colors.
 
 ## Color Palette
 
