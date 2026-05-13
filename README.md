@@ -263,6 +263,12 @@ x16-PRos includes a comprehensive collection of built-in applications:
   </td>
 </tr>
 <tr>
+  </td>
+    <td width="33%" align="center">
+    <img src="docs/screenshots/settings.png" width="100%"><br>
+    <b>SETTINGS.BIN</b><br>
+    x16-PRos system settings
+  </td>
 <td width="33%" align="center">
     <br>
     <b>And more...</b><br>
@@ -341,6 +347,7 @@ chmod +x build-linux.sh
 > -no-txt           - do not add text files in system build
 > -no-boot-recomp   - do not compiling bootloader, in system build using old compiled bootloader from bin/ directory
 > -no-kernel-recomp - do not compiling kernel, in system build using old compiled kernel from bin/ directory
+> -dtm              - disable setup on first boot. dev testing mode.
 > ```
 
 ### Build Output
