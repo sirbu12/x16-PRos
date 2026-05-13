@@ -395,4 +395,4 @@ ple_logo_x0          dw 0
 ple_logo_y0          dw 0
 ple_row_off          dw 0
 ple_pix_color        db 0
-ple_logo_row_buf     resb 64
+ple_logo_row_buf     times 64 db 0

@@ -270,7 +270,7 @@ int21_dos_handler:
     iret
 
 
-saved_interrupt_table resb 1024
+saved_interrupt_table times 1024 db 0
 dta_offset            dw 0x0080
 dta_segment           dw 0
 verify_flag           db 0
@@ -278,7 +278,7 @@ last_return_code      db 0
 last_return_type      db 0
 com_tmp_drive         db 0
 com_path_buffer       times 128 db 0
-com_path_buffer2       times 128 db 0
+com_path_buffer2      times 128 db 0
 
 ; Copy ASCIIZ from caller DS:DX to kernel com_path_buffer.
 ; Truncates to 127 chars and always null-terminates.

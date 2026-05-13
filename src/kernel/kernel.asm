@@ -990,7 +990,7 @@ launch_bin_program:
     mov ds, ax
     mov es, ax
 
-    jmp far PROGRAM_LOAD_SEG:PROGRAM_LOAD_OFF
+    jmp PROGRAM_LOAD_SEG:PROGRAM_LOAD_OFF
 
 .program_done:
     cli
