@@ -7,7 +7,7 @@ FILE SYSTEM LIMITATIONS:
   File extension length:     3 characters
   Total path length:         Limited by FAT12
   Files per directory:       224 (root), varies (subdirs)
-  Maximum disk size:         1.44 MB (floppy)
+  Maximum disk size:         32 MB (FAT12 limit)
 
 FILENAME RESTRICTIONS:
   Format: 8.3 (name.ext)

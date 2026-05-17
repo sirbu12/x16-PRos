@@ -76,20 +76,6 @@ FILE OPERATIONS:
     Overwrites existing content
     Example: write TEST.TXT Hello world
 
-TEXT PROCESSING:
-  head <filename>
-    Display first 10 lines of file
-    Example: head LONGFILE.TXT
-
-  tail <filename>
-    Display last 10 lines of file
-    Example: tail LOGFILE.TXT
-
-  grep <pattern> <filename>
-    Search for text pattern in file
-    Case-sensitive search
-    Example: grep error LOGFILE.TXT
-
 DIRECTORY OPERATIONS:
   cd <directory>
     Change current directory
@@ -144,6 +130,6 @@ SYSTEM CONTROL:
     Allows booting other OS
 
 
-TIP: Type program name to run .BIN or .COM files
+TIP: Type program name to run .BIN, .EXE, .PLE or .COM files
 
 ===========================================================================

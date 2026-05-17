@@ -3,6 +3,101 @@
 ; Copyright (C) 2025 PRoX2011
 ; ==================================================================
 
+; ==================================================================
+; Some of the string_* functions below are taken from MikeOS
+; Copyright (C) 2006-2014 MikeOS Developers
+; ==================================================================
+
+; =======================================================================
+; STRING_GET_CURSOR_POS - Gets current cursor position
+; IN  : —
+; OUT : DL = column, DH = row
+; =======================================================================
+string_get_cursor_pos:
+    pusha
+    mov ah, 0x03
+    mov bh, 0
+    int 0x10
+    mov [.tmp_dl], dl
+    mov [.tmp_dh], dh
+    popa
+    mov dl, [.tmp_dl]
+    mov dh, [.tmp_dh]
+    ret
+
+.tmp_dl db 0
+.tmp_dh db 0
+
+
+; =======================================================================
+; STRING_MOVE_CURSOR - Moves cursor to specified position
+; IN  : DL = column, DH = row
+; OUT : —
+; =======================================================================
+string_move_cursor:
+    pusha
+    mov ah, 0x02
+    mov bh, 0
+    int 0x10
+    popa
+    ret
+
+; =======================================================================
+; STRING_STRING_PARSE - Splits string into up to 4 space-separated parts
+; IN  : SI = pointer to null-terminated string
+; OUT : AX = pointer to original string
+;       BX = pointer to 2nd part (or 0 if not present)
+;       CX = pointer to 3rd part (or 0 if not present)
+;       DX = pointer to 4th part (or 0 if not present)
+; NOTE: The function modifies the input string in-place:
+;       spaces are replaced with null terminators (0)
+; =======================================================================
+string_string_parse:
+    push si
+    mov ax, si
+    xor bx, bx
+    xor cx, cx
+    xor dx, dx
+    push ax
+
+.loop1:
+    lodsb
+    cmp al, 0
+    je .finish
+    cmp al, ' '
+    jne .loop1
+    dec si
+    mov byte [si], 0
+    inc si
+    mov bx, si
+
+.loop2:
+    lodsb
+    cmp al, 0
+    je .finish
+    cmp al, ' '
+    jne .loop2
+    dec si
+    mov byte [si], 0
+    inc si
+    mov cx, si
+
+.loop3:
+    lodsb
+    cmp al, 0
+    je .finish
+    cmp al, ' '
+    jne .loop3
+    dec si
+    mov byte [si], 0
+    inc si
+    mov dx, si
+
+.finish:
+    pop ax
+    pop si
+    ret
+
 ; =======================================================================
 ; STRING_STRING_LENGTH - Calculates the length of a null-terminated string
 ; IN  : AX = pointer to string
