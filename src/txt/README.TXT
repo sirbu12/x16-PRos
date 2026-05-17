@@ -1,6 +1,6 @@
 ===========================================================================
                         x16-PRos Operating System
-                            Version 0.6.1
+                            Version 0.9.0
 ===========================================================================
 
 Welcome to x16-PRos - a minimalistic 16-bit operating system written

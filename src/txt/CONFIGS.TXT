@@ -71,6 +71,25 @@ They use .CFG extension and are loaded at system startup.
 
   Edit: Use THEME.BIN program or manually edit file
 
+[TIMEZONE.CFG]
+    Purpose: Current timezone offset
+    Format: 1 line with decimal vaule
+    Vaules: -12 to 12
+
+    Example: -5 (UTC-5)
+
+    Edit: Use SETTINGS.BIN or manually edit file
+
+[FONT.CFG]
+    Purpose: Current font filename
+    Format: 1 line with filename of the font 
+              stored at FONTS.DIR/
+    Vaules: 8.3 filename
+
+    Example: BOLD.FNT
+
+    Edit: Use FONT.BIN or manually edit file
+
 [FIRST_B.CFG]
   Purpose: First boot detection flag
   Format: Single digit
