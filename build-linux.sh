@@ -490,22 +490,39 @@ if [ $FLAG_NO_TXT == 0 ]; then
     check_error "Copy of PROJECT.TXT failed"
     print_ok "PROJECT.TXT copied successfully"
 
-    text_files_doc=(
-        "src/txt/README.TXT"
-        "src/txt/CONFIGS.TXT"
-        "src/txt/FILESYS.TXT"
-        "src/txt/LIMITS.TXT"
-        "src/txt/PROGRAMS.TXT"
-        "src/txt/QUICKST.TXT"
-        "src/txt/COMMANDS.TXT"
-        "src/txt/EDMAN.TXT"
+    doc_names=(
+        "README.TXT"
+        "CONFIGS.TXT"
+        "FILESYS.TXT"
+        "LIMITS.TXT"
+        "PROGRAMS.TXT"
+        "QUICKST.TXT"
+        "COMMANDS.TXT"
+        "EDMAN.TXT"
     )
 
-    for file in "${text_files_doc[@]}"; do
-        print_info "Copying $file..."
-        mcopy -i disk_img/x16pros.img $file ::/DOCS.DIR/
-        check_error "Copy of $file failed"
-        print_ok "$file copied successfully"
+    print_info "Creating DOCS.DIR/EN.DIR directory..."
+    mmd -i disk_img/x16pros.img ::/DOCS.DIR/EN.DIR
+    check_error "Failed to create DOCS.DIR/EN.DIR directory"
+    print_ok "DOCS.DIR/EN.DIR directory created successfully"
+
+    print_info "Creating DOCS.DIR/RU.DIR directory..."
+    mmd -i disk_img/x16pros.img ::/DOCS.DIR/RU.DIR
+    check_error "Failed to create DOCS.DIR/RU.DIR directory"
+    print_ok "DOCS.DIR/RU.DIR directory created successfully"
+
+    for name in "${doc_names[@]}"; do
+        print_info "Copying src/txt/$name => DOCS.DIR/EN.DIR/..."
+        mcopy -i disk_img/x16pros.img "src/txt/$name" ::/DOCS.DIR/EN.DIR/
+        check_error "Copy of src/txt/$name failed"
+        print_ok "$name (EN) copied successfully"
+    done
+
+    for name in "${doc_names[@]}"; do
+        print_info "Copying bin/docs_ru/$name => DOCS.DIR/RU.DIR/..."
+        mcopy -i disk_img/x16pros.img "src/txt/RU/$name" ::/DOCS.DIR/RU.DIR/
+        check_error "Copy of RU $name failed"
+        print_ok "$name (RU) copied successfully"
     done
 fi
 
