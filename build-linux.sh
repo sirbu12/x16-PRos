@@ -383,6 +383,7 @@ programs=(
     "programs/print.asm PRINT.BIN"
     "programs/calendar.asm CALENDAR.BIN"
     "programs/settings.asm SETTINGS.BIN"
+    "programs/ping.asm PING.BIN"
 )
 
 for prog in "${programs[@]}"; do
